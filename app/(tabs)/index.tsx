@@ -1,46 +1,78 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from "react-native";
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import EditScreenInfo from "@/components/EditScreenInfo";
+import { Text, View } from "@/components/Themed";
 import { useGlobalStore } from "@/components/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import FirstUi from "@/components/tabs/menu/First-ui";
+import ScreenWrapper from "@/components/utils/screenWrapper/screen-wrapper";
 
 export default function TabOneScreen() {
   const setApiData = useGlobalStore((store) => store.setApiData);
+  const apiData = useGlobalStore((store) => store.apiData);
+  const [data, setData] = useState([1, 2, 3]);
+  const [showUi, setShowUI] = useState("");
+  const [currentUIData, setCurrentUIData] = useState({ title: "", item: "" });
+
+  const handleCancel = () => {
+    setShowUI("");
+  };
+
+  const renderContent = () => {
+    switch (showUi) {
+      case "createMenu":
+        // return <CreateMenu handleCancel={handleCancel} />;
+        return <Text>Create Menu</Text>;
+      case "addMenu":
+      case "updateMenu":
+        // return (
+        //   <CommonMenuForm
+        //     handleCancel={handleCancel}
+        //     currentUIData={currentUIData}
+        //   />
+        // );
+        return <Text>Update Menu</Text>;
+      case "deleteMenu":
+        // return (
+        //   <DeleteUI handleCancel={handleCancel} currentUIData={currentUIData} />
+        // );
+        return <Text>Delete Menu</Text>;
+      default:
+        return (
+          <FirstUi
+            setShowUI={setShowUI}
+            handleCancel={handleCancel}
+            setCurrentUIData={setCurrentUIData}
+          />
+        );
+    }
+  };
 
   useEffect(() => {
-    fetch(process.env.EXPO_PUBLIC_API_URL as string)
-      .then((res) => res.json())
-      .then((data) => setApiData(data));
-    // .then((data) => console.log("data : ", data));
+    if (apiData.length === 0) {
+      fetch(process.env.EXPO_PUBLIC_API_URL as string)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.content?.a) {
+            delete data.content.a;
+            delete data?.content?.n;
+            const result = [];
+            for (const m in data.content) {
+              const item = {
+                name: m.split("_").join(" ").split("-").join(" "),
+                data: data.content[m],
+              };
+              result.push(item);
+            }
+            // console.log("result : ", result);
+            setApiData(result);
+          }
+        });
+    }
   }, []);
   return (
-    <View style={styles.container}>
-      <Text className="text-rose-400 text-2xl">Custom text</Text>
-      <Text style={styles.title}>Tab One</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-    </View>
+    <ScreenWrapper>
+      <View>{renderContent()}</View>
+    </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
