@@ -6,6 +6,7 @@ import { useGlobalStore } from "@/components/store";
 import { useEffect, useState } from "react";
 import FirstUi from "@/components/tabs/menu/First-ui";
 import ScreenWrapper from "@/components/utils/screenWrapper/screen-wrapper";
+import DeleteUi from "@/components/tabs/menu/Delete-ui";
 
 export default function TabOneScreen() {
   const setApiData = useGlobalStore((store) => store.setApiData);
@@ -36,7 +37,9 @@ export default function TabOneScreen() {
         // return (
         //   <DeleteUI handleCancel={handleCancel} currentUIData={currentUIData} />
         // );
-        return <Text>Delete Menu</Text>;
+        return (
+          <DeleteUi handleCancel={handleCancel} currentUIData={currentUIData} />
+        );
       default:
         return (
           <FirstUi
