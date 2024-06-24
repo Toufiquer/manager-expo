@@ -7,14 +7,14 @@ import { useEffect, useState } from "react";
 import FirstUi from "@/components/tabs/menu/First-ui";
 import ScreenWrapper from "@/components/utils/screenWrapper/screen-wrapper";
 import DeleteUi from "@/components/tabs/menu/Delete-ui";
-
+import { storage } from "@/components/storage";
 export default function TabOneScreen() {
   const setApiData = useGlobalStore((store) => store.setApiData);
   const apiData = useGlobalStore((store) => store.apiData);
   const [data, setData] = useState([1, 2, 3]);
   const [showUi, setShowUI] = useState("");
   const [currentUIData, setCurrentUIData] = useState({ title: "", item: "" });
-
+  // storage.set("api.name", "Name");
   const handleCancel = () => {
     setShowUI("");
   };
